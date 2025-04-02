@@ -7,7 +7,7 @@ const authenticate = require('../middlewares/authMiddleware');
 router.get('/', async (req, res) => {
   try {
     const products = await Product.findAll();
-    res.json(products);
+    res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -41,7 +41,13 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', authenticate, multer.array('images', 5), async (req, res) => {
   try {
-    const imageUrls = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'Aucune image téléchargée' });
+    }
+
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    console.log(baseUrl);
+    const imageUrls = req.files.map(file => `${baseUrl}/uploads/${file.filename}`);
 
     const productData = {
       ...req.body,
@@ -51,10 +57,10 @@ router.post('/', authenticate, multer.array('images', 5), async (req, res) => {
     const product = await Product.create(productData);
     res.status(201).json(product);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Erreur lors de la création du produit' });
   }
 });
-
 
 
 router.put('/:id', authenticate, async (req, res) => {
