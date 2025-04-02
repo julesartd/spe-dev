@@ -4,7 +4,7 @@ const Product = require('../models/product');
 const multer = require('../config/multer');
 const authenticate = require('../middlewares/authMiddleware');
 
-router.get('/products', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const products = await Product.findAll();
     res.json(products);
@@ -14,7 +14,7 @@ router.get('/products', async (req, res) => {
 });
 
 
-router.get('/products/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id);
     if (product) {
@@ -28,7 +28,7 @@ router.get('/products/:id', async (req, res) => {
 });
 
 
-router.post('/products', authenticate, multer.array('images', 5), async (req, res) => {
+router.post('/', authenticate, multer.array('images', 5), async (req, res) => {
   try {
     const imageUrls = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
@@ -46,7 +46,7 @@ router.post('/products', authenticate, multer.array('images', 5), async (req, re
 
 
 
-router.put('/products/:id', authenticate, async (req, res) => {
+router.put('/:id', authenticate, async (req, res) => {
   try {
     const [updated] = await Product.update(req.body, {
       where: { id: req.params.id },
@@ -63,7 +63,7 @@ router.put('/products/:id', authenticate, async (req, res) => {
 });
 
 
-router.delete('/products/:id', authenticate, async (req, res) => {
+router.delete('/:id', authenticate, async (req, res) => {
   try {
     const deleted = await Product.destroy({
       where: { id: req.params.id },
