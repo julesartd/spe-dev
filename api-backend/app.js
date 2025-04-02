@@ -6,6 +6,7 @@ const cartRoutes = require('./routes/cartRoutes');
 const corsMiddleware = require('./middlewares/corsMiddleware');
 const csrfMiddleware = require('./middlewares/csrfMiddleware');
 const cookieParser = require('cookie-parser');
+const Product = require('./models/product');
 require('dotenv').config();
 
 const app = express();
@@ -27,6 +28,26 @@ app.get('/api/csrf-token', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
+app.get('/api/stats', async (req, res) => {
+  try {
+    const stats = await Product.findAll({
+      attributes: [
+        'categorie',
+        [sequelize.fn('COUNT', sequelize.col('id')), 'total'],
+      ],
+      group: 'categorie',
+    });
+
+    const formattedStats = stats.map(stat => ({
+      categorie: stat.categorie,
+      total: stat.dataValues.total,
+    }));
+  
+    res.status(200).json(formattedStats);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 
 
