@@ -31,14 +31,9 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
-    console.log(req.body);
+  
     const { email, password } = req.body;
     const user = await User.findOne({ where: { email } });
-
-    // console.log(user);
-
-    console.log(user.password)
-    console.log(await bcrypt.compare(password, user.password));
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
