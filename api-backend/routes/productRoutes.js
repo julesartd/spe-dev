@@ -95,4 +95,28 @@ router.delete('/:id', authenticate, async (req, res) => {
   }
 });
 
+
+router.get('/stats', authenticate, async (req, res) => {
+  try {
+    const stats = await Product.findAll({
+      attributes: [
+        'categorie',
+        [sequelize.fn('COUNT', sequelize.col('id')), 'total'],
+      ],
+      group: 'categorie',
+    });
+
+    console.log(stats);
+
+    const formattedStats = stats.map(stat => ({
+      categorie: stat.categorie,
+      total: stat.dataValues.total,
+    }));
+  
+    res.status(200).json(formattedStats);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
