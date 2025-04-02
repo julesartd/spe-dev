@@ -1,10 +1,12 @@
-const BASE_URL = 'http://localhost:5000/api/';
+const BASE_URL = import.meta.env.VITE_API_URL;
+
+console.log(BASE_URL);
 
 function ApiClient() {
     if (!(this instanceof ApiClient)) {
         return new ApiClient();
     }
-    this.baseUrl = BASE_URL;
+    this.baseUrl = BASE_URL+"/api/";
 }
 
 ApiClient.prototype.get = async function(endpoint) {
@@ -29,14 +31,17 @@ ApiClient.prototype.get = async function(endpoint) {
 };
 
 ApiClient.prototype.post = async function(endpoint, data) {
+    const isFormData = data instanceof FormData;
+
     try {
         const response = await fetch(`${this.baseUrl}${endpoint}`, {
             method: 'POST',
-            headers: {
+            headers: isFormData ? undefined : {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data)
+            body: isFormData ? data : JSON.stringify(data)
         });
+
         return await response.json();
     } catch (error) {
         console.error('Erreur POST:', error);

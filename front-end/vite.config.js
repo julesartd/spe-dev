@@ -1,14 +1,15 @@
-import { defineConfig } from 'vite';
-import dotenv from 'dotenv';
+// vite.config.js
+import { defineConfig, loadEnv } from 'vite';
 
-dotenv.config();
-
-export default defineConfig({
-    define: {
-        'process.env.API_URL': JSON.stringify(process.env.API_URL)
-    },
-    root: ".",
-    server: {
-        port: 3000
-    },
+export default defineConfig(({ mode }) => {
+    const env = loadEnv(mode, process.cwd());
+    console.log("ENV VITE_API_URL:", env.VITE_API_URL);
+    return {
+        define: {
+            __API__: JSON.stringify(env.VITE_API_URL),
+        },
+        server: {
+            port: 3000
+        },
+    }
 });

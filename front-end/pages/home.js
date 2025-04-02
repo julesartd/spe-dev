@@ -1,9 +1,12 @@
 import { apiClient } from "../utils/client.js";
 
+const API_URL = import.meta.env.VITE_API_URL
+
+
 const productTemplate = (product) => `
     <div class="product-card" data-id="${product.id}">
         <div class="product-image">
-            <img src="${product.images[0] || 'placeholder.jpg'}" alt="${product.libelle}">
+            <img src="${API_URL}${product.images[0] || 'placeholder.jpg'}" alt="${product.libelle}">
         </div>
         <div class="product-info">
             <h3>${product.libelle}</h3>
