@@ -5,6 +5,7 @@ import { productDetailView } from "./pages/productDetail.js";
 import { homeView } from "./pages/home.js";
 import {addProductView} from "./pages/addProduct.js";
 import {registerView} from "./pages/register.js";
+import {dashbordView} from "./pages/dashboard.js";
 
 const routes = {
     "/": { view: homeView },
@@ -12,7 +13,7 @@ const routes = {
     "/register": { view: registerView },
     "/product/:id": { view: productDetailView },
     "/404": { view: () => "<h1>404 - Not Found</h1>" },
-    "/dashboard": { view: () => "<h1>Dashboard</h1>", protected: true },
+    "/dashboard": { view: dashbordView },
     "/add-product": {
         view: addProductView,
     },

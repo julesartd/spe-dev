@@ -1,4 +1,5 @@
 import { apiClient } from "../utils/client.js";
+import {decodeJWT, getToken} from "../utils/auth.js";
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -62,10 +63,10 @@ const setupControls = (products) => {
     sortSelect.addEventListener('change', filterAndSort);
 };
 
-export const homeView = async () => {
+export const dashbordView = async () => {
     let products = [];
     try {
-        products = await apiClient.get("products") || [];
+        products = await apiClient.get(`products/byUser/${decodeJWT(getToken()).id}`) || [];
     } catch (error) {
         console.error("Erreur lors du chargement des produits:", error);
     }
@@ -73,13 +74,6 @@ export const homeView = async () => {
     setTimeout(() => setupControls(products), 0);
 
     return `
-        <div class="hero-banner">
-            <div class="hero-content">
-                <h1>Bienvenue sur notre boutique</h1>
-                <p>Des produits pour tous les besoins, au meilleur prix !</p>
-            </div>
-        </div>
-
         <div class="controls-bar">
             <div class="search-bar">
                 <input type="text" id="searchInput" placeholder="🔍 Rechercher un produit...">

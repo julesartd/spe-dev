@@ -1,4 +1,5 @@
 import {apiClient} from "../utils/client.js";
+import {decodeJWT, getToken} from "../utils/auth.js";
 
 export const addProductView = async () => {
     setTimeout(() => {
@@ -21,6 +22,7 @@ export const addProductView = async () => {
                 formData.append("description", form.description.value);
                 formData.append("prix", form.prix.value);
                 formData.append("categorie", form.categorie.value);
+                formData.append("userId", decodeJWT(getToken()).id);
 
                 Array.from(files).forEach((file) => {
                     formData.append("images", file);
@@ -71,6 +73,8 @@ export const addProductView = async () => {
             });
         }
     }, 0); // petit timeout pour attendre l'injection du HTML
+
+    console.log()
 
     return `
     <div class="add-product-container">

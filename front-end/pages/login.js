@@ -14,6 +14,7 @@ export const loginView = () => {
                 const result = await apiClient.post("auth/login", { email, password });
                 if (result.token) {
                     saveToken(result.token);
+                    apiClient.setToken(result.token)
                     alert("Connexion réussie !");
                     window.location.href = "/";
                 } else {

@@ -13,6 +13,17 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/byUser/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const products = await Product.findAll({ where: { userId } });
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 
 router.get('/:id', async (req, res) => {
   try {
