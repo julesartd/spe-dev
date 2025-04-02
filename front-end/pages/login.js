@@ -1,15 +1,42 @@
-export const loginView = async () => `
-  <h1>Connexion</h1>
-  <form onsubmit="handleLogin(event)">
-    <input type="text" placeholder="Email" required />
-    <input type="password" placeholder="Mot de passe" required />
-    <button type="submit">Se connecter</button>
-  </form>
-  <script>
-    window.handleLogin = (e) => {
-      e.preventDefault();
-      localStorage.setItem("auth", "true");
-      window.location.href = "/dashboard";
-    };
-  </script>
-`;
+import { apiClient } from "../utils/client.js";
+import { saveToken } from "../utils/auth.js";
+
+export const loginView = () => {
+    setTimeout(() => {
+        const form = document.getElementById("loginForm");
+        form?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const email = form.email.value;
+            const password = form.password.value;
+
+            try {
+                const result = await apiClient.post("auth/login", { email, password });
+                if (result.token) {
+                    saveToken(result.token);
+                    alert("Connexion réussie !");
+                    window.location.href = "/";
+                } else {
+                    alert("Email ou mot de passe incorrect.");
+                }
+            } catch (err) {
+                console.error("Erreur login :", err);
+                alert("Erreur lors de la connexion");
+            }
+        });
+    }, 0);
+
+    return `
+    <div class="auth-form-container">
+      <h2>Connexion</h2>
+      <form id="loginForm" class="auth-form">
+        <label>Email</label>
+        <input type="email" name="email" required />
+        <label>Mot de passe</label>
+        <input type="password" name="password" required />
+        <button type="submit">Se connecter</button>
+        <p>Pas encore inscrit ? <a href="/register" data-link>Créer un compte</a></p>
+      </form>
+    </div>
+  `;
+};

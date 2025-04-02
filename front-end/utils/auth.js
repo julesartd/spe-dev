@@ -1,11 +1,22 @@
-export const isAuthenticated = () => {
-    return localStorage.getItem("auth") === "true";
+export const saveToken = (token) => {
+    localStorage.setItem("jwt", token);
 };
 
-export const login = () => {
-    localStorage.setItem("auth", "true");
+export const getToken = () => {
+    return localStorage.getItem("jwt");
+};
+
+export const isAuthenticated = () => {
+    return !!getToken();
 };
 
 export const logout = () => {
-    localStorage.removeItem("auth");
+    localStorage.removeItem("jwt");
 };
+
+window.logoutUser = () => {
+    logout();
+    alert("Déconnecté !");
+    window.location.href = "/";
+};
+
