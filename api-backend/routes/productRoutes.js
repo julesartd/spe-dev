@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/product');
 const multer = require('../config/multer');
+const authenticate = require('../middlewares/authMiddleware');
 
 router.get('/products', async (req, res) => {
   try {
@@ -26,25 +27,26 @@ router.get('/products/:id', async (req, res) => {
   }
 });
 
-router.post('/products', multer.array('images', 5), async (req, res) => {
-    try {
-      const imageUrls = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
-    
-      const productData = {
-        ...req.body,
-        images: imageUrls,
-      };
-  
-      const product = await Product.create(productData);
-      res.status(201).json(product);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
-  
+
+router.post('/products', authenticate, multer.array('images', 5), async (req, res) => {
+  try {
+    const imageUrls = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+
+    const productData = {
+      ...req.body,
+      images: imageUrls,
+    };
+
+    const product = await Product.create(productData);
+    res.status(201).json(product);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 
-router.put('/products/:id', async (req, res) => {
+
+router.put('/products/:id', authenticate, async (req, res) => {
   try {
     const [updated] = await Product.update(req.body, {
       where: { id: req.params.id },
@@ -61,7 +63,7 @@ router.put('/products/:id', async (req, res) => {
 });
 
 
-router.delete('/products/:id', async (req, res) => {
+router.delete('/products/:id', authenticate, async (req, res) => {
   try {
     const deleted = await Product.destroy({
       where: { id: req.params.id },
