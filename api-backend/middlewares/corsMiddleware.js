@@ -1,6 +1,7 @@
 const cors = require('cors');
 
 const allowedOrigins = ['http://localhost:3000'];
+const allowedRoutes = ['/api/stats'];
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -16,6 +17,12 @@ const corsOptions = {
   optionsSuccessStatus: 200,
 };
 
-const corsMiddleware = cors(corsOptions);
+const corsMiddleware = (req, res, next) => {
+  if (allowedRoutes.includes(req.path)) {
+    cors({ origin: '*' })(req, res, next);
+  } else {
+    cors(corsOptions)(req, res, next);
+  }
+};
 
 module.exports = corsMiddleware;
