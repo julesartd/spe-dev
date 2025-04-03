@@ -47,7 +47,9 @@ const resetDatabaseAndInsertData = async () => {
 
     const users = await User.bulkCreate(await createUsers(), {
       validate: true,
+      individualHooks: true
     });
+    
     console.log('2 utilisateurs fictifs insérés dans la base de données');
 
     const productPromises = users.map((user) =>

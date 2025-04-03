@@ -7,6 +7,7 @@ const corsMiddleware = require('./middlewares/corsMiddleware');
 const csrfMiddleware = require('./middlewares/csrfMiddleware');
 const cookieParser = require('cookie-parser');
 const Product = require('./models/product');
+const jsonErrorMiddleware = require('./middlewares/jsonErrorMiddleware');
 require('dotenv').config();
 
 const app = express();
@@ -48,6 +49,8 @@ app.get('/api/stats', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+app.use(jsonErrorMiddleware);
 
 
 

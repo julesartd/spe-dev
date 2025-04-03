@@ -38,29 +38,23 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-
 router.post('/', authenticate, multer.array('images', 5), async (req, res) => {
-  try {
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: 'Aucune image téléchargée' });
-    }
-
     const baseUrl = `${req.protocol}://${req.get('host')}`;
-    console.log(baseUrl);
-    const imageUrls = req.files.map(file => `${baseUrl}/uploads/${file.filename}`);
+    const imageUrls = req.files && req.files.length > 0 
+      ? req.files.map(file => `${baseUrl}/uploads/${file.filename}`)
+      : [];
 
     const productData = {
       ...req.body,
+      userId: req.user.id,
       images: imageUrls,
     };
 
     const product = await Product.create(productData);
     res.status(201).json(product);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erreur lors de la création du produit' });
-  }
+
 });
+
 
 
 router.put('/:id', authenticate, async (req, res) => {

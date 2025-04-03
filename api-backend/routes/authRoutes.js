@@ -8,7 +8,7 @@ const router = express.Router();
 const SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 router.post('/register', async (req, res) => {
-  try {
+
     const { email, password, firstName, lastName } = req.body;
     
     if (!email || !password || !firstName || !lastName) {
@@ -23,9 +23,7 @@ router.post('/register', async (req, res) => {
 
     const user = await User.create({ email, password, firstName, lastName });
     res.status(201).json({ message: 'Utilisateur créé avec succès' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+
 });
 
 
@@ -34,6 +32,8 @@ router.post('/login', async (req, res) => {
   
     const { email, password } = req.body;
     const user = await User.findOne({ where: { email } });
+
+    console.log(user);
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
