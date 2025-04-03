@@ -5,18 +5,27 @@ const authRoutes = require('./routes/authRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const corsMiddleware = require('./middlewares/corsMiddleware');
 const csrfMiddleware = require('./middlewares/csrfMiddleware');
+const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const Product = require('./models/product');
+const CspReport = require('./models/cspReport');
 const jsonErrorMiddleware = require('./middlewares/jsonErrorMiddleware');
+const cspMiddleware = require('./middlewares/cspMiddleware');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+app.use(cspMiddleware);
 app.use(corsMiddleware);
+
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(jsonErrorMiddleware);
+
 
 app.use('/uploads', express.static('uploads'));
 
@@ -50,7 +59,29 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
-app.use(jsonErrorMiddleware);
+app.get('/test-csp', (req, res) => {
+  res.send('CSP test page');
+}
+);
+
+
+app.post('/api/csp-violation-report', express.json(), async (req, res) => {
+  const report = req.body['csp-report'];
+  console.log('CSP Violation Report:', JSON.stringify(report, null, 2));
+
+  if (!report) {
+    return res.status(400).json({ error: 'Invalid CSP report format' });
+  }
+
+  try {
+    await CspReport.create({ report });
+    console.log('CSP Violation Report enregistré:', JSON.stringify(report, null, 2));
+    res.status(204).end();
+  } catch (error) {
+    console.error('Erreur lors de l\'enregistrement du rapport CSP:', error);
+    res.status(500).json({ error: 'Failed to store CSP report' });
+  }
+});
 
 
 
