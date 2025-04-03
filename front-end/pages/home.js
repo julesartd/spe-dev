@@ -1,11 +1,7 @@
 import { apiClient } from "../utils/client.js";
-import {CartManager} from "../utils/cartManager.js";
-import {decodeJWT, getToken} from "../utils/auth.js";
+import { CartManager } from "../utils/cartManager.js";
 
-const API_URL = import.meta.env.VITE_API_URL
-
-
-const productTemplate = (product) => `
+const createProductCard = (product) => `
     <div class="product-card" data-id="${product.id}">
         <div class="product-image">
             <img src="${product.images[0] || 'placeholder.jpg'}" alt="${product.libelle}">
@@ -17,10 +13,10 @@ const productTemplate = (product) => `
                 <span class="price">${product.prix}€</span>
             </div>
             <div class="product-actions">
-                <button class="add-to-cart" data-product='${JSON.stringify(product).replace(/"/g, "&quot;")}'>
-                  Ajouter
+                <button class="add-to-cart" data-product-id="${product.id}">
+                    Ajouter
                 </button>
-                <button class="details" onclick="window.location.href='/product/${product.id}'">
+                <button class="details" data-product-id="${product.id}">
                     Détails
                 </button>
             </div>
@@ -28,69 +24,82 @@ const productTemplate = (product) => `
     </div>
 `;
 
-const updateProductsDisplay = (products, container) => {
-    container.innerHTML = products.map(productTemplate).join('');
+const filterProducts = (products, searchTerm) =>
+    products.filter(product =>
+        product.libelle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+const sortProducts = (products, sortType) => {
+    switch (sortType) {
+        case 'price-asc':
+            return [...products].sort((a, b) => a.prix - b.prix);
+        case 'price-desc':
+            return [...products].sort((a, b) => b.prix - a.prix);
+        default:
+            return products;
+    }
 };
 
-const setupControls = (products) => {
-    const searchInput = document.getElementById("searchInput");
-    const sortSelect = document.getElementById("sortSelect");
-    const productsGrid = document.getElementById("products-grid");
-    let currentProducts = [...products];
-
-    const filterAndSort = () => {
-        const searchTerm = searchInput.value.toLowerCase();
-        const sortValue = sortSelect.value;
-
-        let filtered = products.filter(
-            (product) =>
-                product.libelle.toLowerCase().includes(searchTerm) ||
-                product.description.toLowerCase().includes(searchTerm)
-        );
-
-        switch (sortValue) {
-            case "price-asc":
-                filtered.sort((a, b) => a.prix - b.prix);
-                break;
-            case "price-desc":
-                filtered.sort((a, b) => b.prix - a.prix);
-                break;
-        }
-
-        currentProducts = filtered;
-        updateProductsDisplay(filtered, productsGrid);
-    };
-
-    searchInput.addEventListener("input", filterAndSort);
-    sortSelect.addEventListener("change", filterAndSort);
-
+const updateProductsGrid = (products) => {
+    const productsGrid = document.getElementById('products-grid');
+    if (productsGrid) {
+        productsGrid.innerHTML = products.map(createProductCard).join('');
+    }
 };
 
+const handleProductSearch = (products, searchTerm, sortType) => {
+    const filteredProducts = filterProducts(products, searchTerm);
+    const sortedProducts = sortProducts(filteredProducts, sortType);
+    updateProductsGrid(sortedProducts);
+};
 
-export const homeView = async () => {
-    let products = [];
-    try {
-        products = await apiClient.get("products") || [];
-    } catch (error) {
-        console.error("Erreur lors du chargement des produits:", error);
+const handleProductClick = (event, products) => {
+    const button = event.target;
+    if (!button.dataset.productId) return;
+
+    if (button.classList.contains('add-to-cart')) {
+        CartManager.add(parseInt(button.dataset.productId));
+        CartManager.renderFlyout(products);
+    } else if (button.classList.contains('details')) {
+        window.location.href = `/product/${button.dataset.productId}`;
+    }
+};
+
+const attachEventListeners = (products) => {
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const productsGrid = document.getElementById('products-grid');
+
+    if (searchInput && sortSelect) {
+        const handleSearchAndSort = () =>
+            handleProductSearch(products, searchInput.value, sortSelect.value);
+
+        searchInput.addEventListener('input', handleSearchAndSort);
+        sortSelect.addEventListener('change', handleSearchAndSort);
     }
 
-    setTimeout(async () => {
-        const products = await apiClient.get("products");
+    if (productsGrid) {
+        productsGrid.addEventListener('click', (e) => handleProductClick(e, products));
+    }
+};
 
+const fetchProducts = async () => {
+    try {
+        return await apiClient.get("products") || [];
+    } catch (error) {
+        console.error("Erreur lors du chargement des produits:", error);
+        return [];
+    }
+};
+
+export const homeView = async () => {
+    const products = await fetchProducts();
+
+    setTimeout(() => {
+        attachEventListeners(products);
         CartManager.renderFlyout(products);
-
-        document.querySelectorAll(".add-to-cart").forEach(btn => {
-            const product = JSON.parse(btn.dataset.product);
-
-            btn.addEventListener("click", () => {
-                CartManager.add(product.id);
-                CartManager.renderFlyout(products);
-            });
-        });
     }, 0);
-
-    setTimeout(() => setupControls(products), 0);
 
     return `
         <div class="hero-banner">
@@ -116,25 +125,8 @@ export const homeView = async () => {
         <section class="product-section">
             <h2 class="section-title">Nos produits</h2>
             <div id="products-grid" class="products-grid">
-                ${products.map(productTemplate).join('')}
+                ${products.map(createProductCard).join('')}
             </div>
         </section>
-
-        <script>
-            window.addToCart = function(product) {
-                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-                const existingItem = cart.find(item => item.id === product.id);
-        
-                if (existingItem) {
-                    existingItem.quantity += 1;
-                } else {
-                    cart.push({ ...product, quantity: 1 });
-                }
-        
-                localStorage.setItem('cart', JSON.stringify(cart));
-                alert('Produit ajouté au panier');
-            };
-        </script>
-
     `;
 };

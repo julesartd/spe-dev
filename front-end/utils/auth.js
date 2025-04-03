@@ -1,24 +1,29 @@
-export const saveToken = (token) => {
+function AuthManager() {
+    if (AuthManager.instance) {
+        return AuthManager.instance;
+    }
+    AuthManager.instance = this;
+}
+
+AuthManager.prototype.saveToken = function(token) {
     localStorage.setItem("jwt", token);
 };
 
-export const getToken = () => {
+AuthManager.prototype.getToken = function() {
     return localStorage.getItem("jwt");
 };
 
-export const checkTokenExpired = () => {
-    decodeJWT(getToken())
-    const payload = decodeJWT(getToken())
-    const currentTime = Math.floor(Date.now() / 1000); // en secondes
+AuthManager.prototype.checkTokenExpired = function() {
+    const payload = this.decodeJWT(this.getToken());
+    const currentTime = Math.floor(Date.now() / 1000);
     return payload.exp < currentTime;
 };
 
-
-export const isAuthenticated = () => {
-    return !!getToken();
+AuthManager.prototype.isAuthenticated = function() {
+    return !!this.getToken();
 };
 
-export const decodeJWT = (token) => {
+AuthManager.prototype.decodeJWT = function(token) {
     try {
         const payload = token.split('.')[1];
         const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
@@ -35,13 +40,26 @@ export const decodeJWT = (token) => {
     }
 };
 
-export const logout = () => {
+AuthManager.prototype.logout = function() {
     localStorage.removeItem("jwt");
 };
 
-window.logoutUser = () => {
-    logout();
+AuthManager.prototype.logoutUser = function() {
+    this.logout();
     alert("Déconnecté !");
     window.location.href = "/";
 };
 
+// Création d'une instance unique (Singleton)
+const auth = new AuthManager();
+
+// Export des méthodes
+export const saveToken = (token) => auth.saveToken(token);
+export const getToken = () => auth.getToken();
+export const checkTokenExpired = () => auth.checkTokenExpired();
+export const isAuthenticated = () => auth.isAuthenticated();
+export const decodeJWT = (token) => auth.decodeJWT(token);
+export const logout = () => auth.logout();
+
+// Exposition de la méthode de déconnexion globalement
+window.logoutUser = () => auth.logoutUser();

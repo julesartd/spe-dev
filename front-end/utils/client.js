@@ -36,25 +36,18 @@ ApiClient.prototype.post = async function (endpoint, data) {
     const isFormData = data instanceof FormData;
     let token = getToken()
     console.log(token)
-    try {
-        const response = await fetch(`${this.baseUrl}${endpoint}`, {
-            method: 'POST',
-            headers: isFormData
-                ? token
-                    ? { Authorization: `Bearer ${token}` }
-                    : undefined
-                : {
-                    'Content-Type': 'application/json',
-                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-                },
-            body: isFormData ? data : JSON.stringify(data),
-        });
-
-        return await response.json();
-    } catch (error) {
-        console.error('Erreur POST:', error);
-        throw error;
-    }
+    return await fetch(`${this.baseUrl}${endpoint}`, {
+        method: 'POST',
+        headers: isFormData
+            ? token
+                ? {Authorization: `Bearer ${token}`}
+                : undefined
+            : {
+                'Content-Type': 'application/json',
+                ...(token ? {Authorization: `Bearer ${token}`} : {}),
+            },
+        body: isFormData ? data : JSON.stringify(data),
+    });
 };
 
 ApiClient.prototype.put = async function (endpoint, data) {

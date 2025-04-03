@@ -72,3 +72,51 @@
 .auth-form a:hover {
     text-decoration: underline;
 }
+.password-feedback {
+    margin-top: 0.5rem;
+}
+
+.password-checklist {
+    list-style: none;
+    padding: 0;
+    font-size: 0.85rem;
+}
+
+.password-checklist li {
+    margin: 2px 0;
+    padding-left: 1.2em;
+    position: relative;
+}
+
+.password-checklist li::before {
+    content: "❌";
+    position: absolute;
+    left: 0;
+}
+
+.password-checklist li.valid {
+    color: green;
+}
+
+.password-checklist li.valid::before {
+    content: "✅";
+}
+
+.password-checklist li.invalid {
+    color: #a00;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group.has-error input {
+    border-color: #dc3545;
+}
+
+.error-message {
+    display: block;
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}

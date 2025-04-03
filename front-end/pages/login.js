@@ -1,47 +1,71 @@
 import { apiClient } from "../utils/client.js";
 import { saveToken } from "../utils/auth.js";
-import {CartManager} from "../utils/cartManager.js";
+import { CartManager } from "../utils/cartManager.js";
+
+const createLoginForm = () => `
+    <div class="auth-form-container">
+        <h2>Connexion</h2>
+        <form id="loginForm" class="auth-form">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" required />
+            </div>
+
+            <div class="form-group">
+                <label>Mot de passe</label>
+                <input type="password" name="password" required />
+            </div>
+
+            <button type="submit">Se connecter</button>
+            <p>Pas encore inscrit ? <a href="/register" data-link>Créer un compte</a></p>
+        </form>
+    </div>
+`;
+
+const performLogin = async (credentials) => {
+    try {
+        const result = await apiClient.post("auth/login", credentials);
+        if (!result.token) {
+            throw new Error("Token manquant dans la réponse");
+        }
+        return result;
+    } catch (error) {
+        console.error("Erreur login :", error);
+        throw error;
+    }
+};
+
+const handleLoginSuccess = async (token) => {
+    saveToken(token);
+    await CartManager.synchronizeCart();
+    document.dispatchEvent(new Event("login-success"));
+    window.location.href = "/dashboard";
+};
+
+const handleFormSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const credentials = {
+        email: formData.get("email"),
+        password: formData.get("password")
+    };
+
+    try {
+        const result = await performLogin(credentials);
+        await handleLoginSuccess(result.token);
+    } catch (error) {
+        alert("Email ou mot de passe incorrect.");
+    }
+};
+
+const attachEventListeners = () => {
+    const form = document.getElementById("loginForm");
+    if (form) {
+        form.addEventListener("submit", handleFormSubmit);
+    }
+};
 
 export const loginView = () => {
-    setTimeout(() => {
-        const form = document.getElementById("loginForm");
-        form?.addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            const email = form.email.value;
-            const password = form.password.value;
-
-            try {
-                const result = await apiClient.post("auth/login", { email, password });
-                if (result.token) {
-                    saveToken(result.token);
-                    await CartManager.synchronizeCart(); // Synchroniser avant la redirection
-                    document.dispatchEvent(new Event("login-success"));
-                    window.location.href = "/dashboard";
-                } else {
-                    alert("Email ou mot de passe incorrect.");
-                }
-            } catch (err) {
-                console.error("Erreur login :", err);
-                alert("Erreur lors de la connexion");
-            }
-        });
-    }, 0);
-
-    return `
-   <div class="auth-form-container">
-      <h2>Connexion</h2>
-      <form id="loginForm" class="auth-form">
-        <label>Email</label>
-        <input type="email" name="email" required />
-        
-        <label>Mot de passe</label>
-        <input type="password" name="password" required />
-        
-        <button type="submit">Se connecter</button>
-        <p>Pas encore inscrit ? <a href="/register" data-link>Créer un compte</a></p>
-      </form>
-    </div>
-
-  `;
+    setTimeout(attachEventListeners, 0);
+    return createLoginForm();
 };

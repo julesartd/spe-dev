@@ -1,15 +1,14 @@
 import { createRouter } from "./router.js";
-import {checkTokenExpired, getToken, isAuthenticated} from "./utils/auth.js";
+import { checkTokenExpired, getToken, isAuthenticated } from "./utils/auth.js";
 import { loginView } from "./pages/login.js";
 import { productDetailView } from "./pages/productDetail.js";
 import { homeView } from "./pages/home.js";
-import {addProductView} from "./pages/addProduct.js";
-import {registerView} from "./pages/register.js";
-import {dashbordView} from "./pages/dashboard.js";
-import {editView} from "./pages/editView.js";
-import {apiClient} from "./utils/client.js";
-import {CartManager} from "./utils/cartManager.js";
-import {statsView} from "./pages/statsView.js";
+import { addProductView } from "./pages/addProduct.js";
+import { registerView } from "./pages/register.js";
+import { dashbordView } from "./pages/dashboard.js";
+import { editView } from "./pages/editView.js";
+import { apiClient } from "./utils/client.js";
+import { CartManager } from "./utils/cartManager.js";
 
 const routes = {
     "/": { view: homeView },
@@ -19,11 +18,10 @@ const routes = {
     "/404": { view: () => "<h1>404 - Not Found</h1>" },
     "/dashboard": { view: dashbordView, protected: true },
     "/add-product": { view: addProductView, protected: true },
-    '/edit/:id': {view: editView, protected: true},
-    "/stats": { view: statsView, protected: true },
+    "/edit/:id": { view: editView, protected: true }
 };
 
-window.addEventListener("DOMContentLoaded", () => {
+const updateNavigation = () => {
     const loginLink = document.getElementById("nav-login");
     const logoutBtn = document.getElementById("logoutBtn");
     const dashboardBtn = document.getElementById("nav-dashboard");
@@ -36,23 +34,22 @@ window.addEventListener("DOMContentLoaded", () => {
         loginLink?.classList.remove("hidden");
         logoutBtn?.classList.add("hidden");
         dashboardBtn?.classList.add("hidden");
-
     }
-});
+};
 
-document.getElementById("toggle-cart-btn")?.addEventListener("click", async () => {
+const toggleCart = async () => {
     const flyout = document.getElementById("cart-flyout");
-    const products = await apiClient.get("products");
 
     if (flyout.classList.contains("hidden")) {
+        const products = await apiClient.get("products");
         CartManager.renderFlyout(products);
         flyout.classList.remove("hidden");
     } else {
         flyout.classList.add("hidden");
     }
-});
+};
 
-document.addEventListener("mousedown", (event) => {
+const handleClickOutsideCart = (event) => {
     const cart = document.getElementById("cart-flyout");
     const toggleBtn = document.getElementById("toggle-cart-btn");
 
@@ -64,8 +61,7 @@ document.addEventListener("mousedown", (event) => {
     if (!clickedInsideCart && !clickedToggleBtn) {
         cart.classList.add("hidden");
     }
-});
-
+};
 
 const updateCartBadge = () => {
     const cart = JSON.parse(localStorage.getItem("cart") || '{"products": []}');
@@ -77,27 +73,36 @@ const updateCartBadge = () => {
         badge.textContent = totalItems;
         badge.classList.toggle("hidden", totalItems === 0);
     }
-}
+};
 
-updateCartBadge()
-
-setInterval(() => {
+const checkTokenValidity = () => {
     const token = getToken();
-
     if (token && checkTokenExpired()) {
         localStorage.removeItem("token");
         window.location.href = "/login";
     }
-}, 60000); // toutes les 60 secondes
+};
 
-const router = createRouter(routes, isAuthenticated);
+const initializeEventListeners = () => {
+    document.addEventListener("DOMContentLoaded", () => {
+        updateNavigation();
+        CartManager.initialize();
+    });
 
-document.addEventListener("DOMContentLoaded", async () => {
-    await CartManager.initialize();
-});
+    document.getElementById("toggle-cart-btn")?.addEventListener("click", toggleCart);
+    document.addEventListener("mousedown", handleClickOutsideCart);
+    document.addEventListener("login-success", CartManager.synchronizeCart);
+};
 
-document.addEventListener("login-success", async () => {
-    await CartManager.synchronizeCart();
-});
+const initializeApp = () => {
+    const router = createRouter(routes, isAuthenticated);
 
-document.addEventListener("DOMContentLoaded", router.init);
+    initializeEventListeners();
+    updateCartBadge();
+
+    setInterval(checkTokenValidity, 60000);
+
+    document.addEventListener("DOMContentLoaded", router.init);
+};
+
+initializeApp();
