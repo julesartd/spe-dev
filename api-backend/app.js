@@ -29,7 +29,7 @@ app.use(jsonErrorMiddleware);
 
 app.use('/uploads', express.static('uploads'));
 
-// app.use(csrfMiddleware);
+app.use(csrfMiddleware);
 
 app.get('/api/csrf-token', (req, res) => {
   res.json({ csrfToken: res.locals.csrfToken });

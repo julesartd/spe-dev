@@ -20,9 +20,8 @@ const createEditForm = (product) => `
             </div>
             <div class="form-group">
                 <label>Catégorie</label>
-                ${renderCategorySelect(product.categorie)}
+                <input type="text" id="categorie" name="categorie" value="${product.libelle}" required />
             </div>
-
             <button type="submit">✅ Enregistrer</button>
             <button type="button" id="cancelEdit">❌ Annuler</button>
         </form>

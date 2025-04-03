@@ -23,7 +23,7 @@ const csrfMiddleware = (req, res, next) => {
   }
 
   if (['POST', 'PUT', 'DELETE'].includes(req.method)) {
-    const csrfTokenClient = req.headers['x-csrf-token'];
+    const csrfTokenClient = req.headers['x-csrf-token'] ;
     const csrfTokenServer = req.cookies['csrf_token'];
 
 

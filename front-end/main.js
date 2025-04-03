@@ -21,6 +21,7 @@ const routes = {
     "/edit/:id": { view: editView, protected: true }
 };
 
+
 const updateNavigation = () => {
     const loginLink = document.getElementById("nav-login");
     const logoutBtn = document.getElementById("logoutBtn");
