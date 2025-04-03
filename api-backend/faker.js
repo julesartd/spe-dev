@@ -4,23 +4,19 @@ const bcrypt = require('bcryptjs');
 const Product = require('./models/product');
 const User = require('./models/user');
 
-const hashPassword = async (password) => {
-  const salt = await bcrypt.genSalt(10);
-  return await bcrypt.hash(password, salt);
-};
 
 const createUsers = async () => [
   {
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
     email: "user1@mail.com",
-    password: await hashPassword('password123'),
+    password: "Password123*",
   },
   {
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
     email: "user2@mail.com",
-    password: await hashPassword('password123'),
+    password: "Password123*",
   },
 ];
 
@@ -38,20 +34,35 @@ const createProductsForUser = (userId) =>
     userId,
   }));
 
-const insertUsersAndProducts = async () => {
-  const users = await User.bulkCreate(await createUsers());
-  console.log('2 utilisateurs fictifs insérés dans la base de données');
+const resetDatabaseAndInsertData = async () => {
+  try {
+  
+    console.log('Suppression de toutes les tables...');
+    await sequelize.drop();
+    console.log('Toutes les tables ont été supprimées.');
 
-  const productPromises = users.map((user) =>
-    Product.bulkCreate(createProductsForUser(user.id))
-  );
+    console.log('Synchronisation des modèles...');
+    await sequelize.sync({ force: true });
+    console.log('Les modèles ont été synchronisés.');
 
-  await Promise.all(productPromises);
-  users.forEach((user) =>
-    console.log(`5 produits fictifs insérés pour l'utilisateur avec l'ID ${user.id}`)
-  );
+    const users = await User.bulkCreate(await createUsers(), {
+      validate: true,
+    });
+    console.log('2 utilisateurs fictifs insérés dans la base de données');
+
+    const productPromises = users.map((user) =>
+      Product.bulkCreate(createProductsForUser(user.id))
+    );
+
+    await Promise.all(productPromises);
+    users.forEach((user) =>
+      console.log(`5 produits fictifs insérés pour l'utilisateur avec l'ID ${user.id}`)
+    );
+
+    console.log('Réinitialisation et insertion des données terminées avec succès.');
+  } catch (error) {
+    console.error('Erreur lors de la réinitialisation de la base de données :', error);
+  }
 };
 
-sequelize.sync({ force: true }).then(() => {
-  insertUsersAndProducts().catch((error) => console.error(error));
-});
+resetDatabaseAndInsertData();

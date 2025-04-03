@@ -6,7 +6,6 @@ const Product = require('./product');
 const Cart = require('./cart');
 const CartProduct = require('./cartProduct');
 
-// Définition des relations
 User.hasMany(Product, { foreignKey: 'userId', onDelete: 'CASCADE' });
 Product.belongsTo(User, { foreignKey: 'userId' });
 
