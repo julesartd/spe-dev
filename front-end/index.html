@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <link rel="stylesheet" href="/styles/home.css">
   <link rel="stylesheet" href="/styles/dashboard.css">
@@ -9,43 +10,57 @@
   <link rel="stylesheet" href="/styles/product-detail.css" />
 
   <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' 'unsafe-eval';
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  img-src 'self' data: blob: http://localhost:5000/uploads https://loremflickr.com https://picsum.photos https://fastly.picsum.photos;
+  connect-src 'self' http://localhost:5000 http://localhost:5000/api/stats;
+  font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;
+  object-src 'none';
+  media-src 'self';
+  frame-src 'self';
+  form-action 'self';
+">
   <title>E-commerce</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
-<nav class="main-nav">
-  <div class="nav-left">
-    <a href="/" data-link class="nav-logo">🛍️ Ma Boutique</a>
-  </div>
-
-  <div class="nav-center">
-    <a href="/" data-link>Accueil</a>
-    <a href="/dashboard" id="nav-dashboard">Tableau de bord</a>
-    <a href="/login" data-link id="nav-login">Se connecter</a>
-
-    <button id="toggle-cart-btn" class="cart-toggle">
-      🛒 Mon panier
-      <span id="cart-badge" class="cart-badge hidden">0</span>
-    </button>
-    <div id="cart-flyout" class="cart-flyout hidden">
-      <div class="cart-items" id="cart-items-list">
-      </div>
-      <div class="cart-total">
-        <span>TOTAL :</span>
-        <strong id="cart-total-price">0,00€</strong>
-      </div>
-      <button class="cart-button" onclick="window.location.href='/cart'">Voir mon panier</button>
+  <nav class="main-nav">
+    <div class="nav-left">
+      <a href="/" data-link class="nav-logo">🛍️ Ma Boutique</a>
     </div>
-  </div>
 
-  <div class="nav-right">
-    <button onclick="logoutUser()" id="logoutBtn" class="logout-btn">Déconnexion</button>
-  </div>
-</nav>
+    <div class="nav-center">
+      <a href="/" data-link>Accueil</a>
+      <a href="/dashboard" id="nav-dashboard">Tableau de bord</a>
+      <a href="/login" data-link id="nav-login">Se connecter</a>
+
+      <button id="toggle-cart-btn" class="cart-toggle">
+        🛒 Mon panier
+        <span id="cart-badge" class="cart-badge hidden">0</span>
+      </button>
+      <div id="cart-flyout" class="cart-flyout hidden">
+        <div class="cart-items" id="cart-items-list">
+        </div>
+        <div class="cart-total">
+          <span>TOTAL :</span>
+          <strong id="cart-total-price">0,00€</strong>
+        </div>
+        <button class="cart-button" onclick="window.location.href='/cart'">Voir mon panier</button>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <button onclick="logoutUser()" id="logoutBtn" class="logout-btn">Déconnexion</button>
+    </div>
+  </nav>
 
 
-<div id="app">Chargement...</div>
+  <div id="app">Chargement...</div>
 
-<script type="module" nonce="%NONCE%" src="/main.js"></script>
+  <script type="module" nonce="%NONCE%" src="/main.js"></script>
 </body>
+
 </html>

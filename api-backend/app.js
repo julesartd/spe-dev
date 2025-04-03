@@ -5,7 +5,6 @@ const authRoutes = require('./routes/authRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const corsMiddleware = require('./middlewares/corsMiddleware');
 const csrfMiddleware = require('./middlewares/csrfMiddleware');
-const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const Product = require('./models/product');
 const CspReport = require('./models/cspReport');
