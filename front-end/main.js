@@ -9,6 +9,7 @@ import {dashbordView} from "./pages/dashboard.js";
 import {editView} from "./pages/editView.js";
 import {apiClient} from "./utils/client.js";
 import {CartManager} from "./utils/cartManager.js";
+import {statsView} from "./pages/statsView.js";
 
 const routes = {
     "/": { view: homeView },
@@ -19,6 +20,7 @@ const routes = {
     "/dashboard": { view: dashbordView, protected: true },
     "/add-product": { view: addProductView, protected: true },
     '/edit/:id': {view: editView, protected: true},
+    "/stats": { view: statsView, protected: true },
 };
 
 window.addEventListener("DOMContentLoaded", () => {
