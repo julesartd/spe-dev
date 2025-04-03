@@ -6,6 +6,14 @@ export const getToken = () => {
     return localStorage.getItem("jwt");
 };
 
+export const checkTokenExpired = () => {
+    decodeJWT(getToken())
+    const payload = decodeJWT(getToken())
+    const currentTime = Math.floor(Date.now() / 1000); // en secondes
+    return payload.exp < currentTime;
+};
+
+
 export const isAuthenticated = () => {
     return !!getToken();
 };

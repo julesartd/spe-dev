@@ -1,5 +1,6 @@
 import {apiClient} from "../utils/client.js";
 import {decodeJWT, getToken} from "../utils/auth.js";
+import {renderCategorySelect} from "../components/categorySelect.js";
 
 export const addProductView = async () => {
     setTimeout(() => {
@@ -95,16 +96,11 @@ export const addProductView = async () => {
           <input type="number" id="prix" name="prix" step="0.01" min="0" required />
         </div>
 
-        <div class="form-group">
-          <label for="categorie">Catégorie</label>
-          <select id="categorie" name="categorie">
-            <option value="">Sélectionnez une catégorie</option>
-            <option value="electronique">Électronique</option>
-            <option value="vetements">Vêtements</option>
-            <option value="maison">Maison</option>
-            <option value="sport">Sport</option>
-          </select>
-        </div>
+        
+          <div class="form-group">
+              <label for="categorie">Catégorie</label>
+              ${renderCategorySelect()}
+          </div>
 
         <div class="form-group">
           <label for="images">Images (max 5)*</label>

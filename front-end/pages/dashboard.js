@@ -16,16 +16,19 @@ const productTemplate = (product) => `
                 <span class="price">${product.prix}€</span>
             </div>
             <div class="product-actions">
-                <button class="add-to-cart" onclick="window.addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
+                <button class="add-to-cart" onclick="window.addToCart(${JSON.stringify({id : product.id}).replace(/"/g, '&quot;')})">
                     Ajouter
                 </button>
                 <button class="details" onclick="window.location.href='/product/${product.id}'">
                     Détails
                 </button>
+                <button class="edit-product" data-id="${product.id}">✏️ Modifier</button>
+                <button class="delete-product" data-id="${product.id}">🗑️ Supprimer</button>
             </div>
         </div>
     </div>
 `;
+
 
 const updateProductsDisplay = (products, container) => {
     container.innerHTML = products.map(productTemplate).join('');
@@ -36,6 +39,32 @@ const setupControls = (products) => {
     const sortSelect = document.getElementById('sortSelect');
     const productsGrid = document.getElementById('products-grid');
     let currentProducts = [...products];
+
+    document.querySelectorAll('.delete-product').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            const id = e.target.dataset.id;
+            if (confirm("Voulez-vous vraiment supprimer ce produit ?")) {
+                try {
+                    await apiClient.delete(`products/${id}`);
+                    const index = currentProducts.findIndex(p => p.id == id);
+                    if (index !== -1) currentProducts.splice(index, 1);
+                    updateProductsDisplay(currentProducts, productsGrid);
+                    setupControls(currentProducts);
+                } catch (err) {
+                    console.error("Erreur lors de la suppression :", err);
+                    alert("Échec de la suppression du produit.");
+                }
+            }
+        });
+    });
+
+    document.querySelectorAll('.edit-product').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const id = e.target.dataset.id;
+            window.location.href = `/edit/${id}`; // redirige vers une page de modification
+        });
+    });
+
 
     const filterAndSort = () => {
         const searchTerm = searchInput.value.toLowerCase();
@@ -71,6 +100,18 @@ export const dashbordView = async () => {
         console.error("Erreur lors du chargement des produits:", error);
     }
 
+    setTimeout(() => {
+        setupControls(products);
+
+        const addBtn = document.getElementById("addProductBtn");
+        if (addBtn) {
+            addBtn.addEventListener("click", () => {
+                window.location.href = "/add-product";
+            });
+        }
+    }, 0);
+
+
     setTimeout(() => setupControls(products), 0);
 
     return `
@@ -88,7 +129,11 @@ export const dashbordView = async () => {
         </div>
 
         <section class="product-section">
-            <h2 class="section-title">Nos produits</h2>
+            <h2 class="section-title">Vos produits</h2>
+            <div class="add-product-btn-bar">
+                <button id="addProductBtn" class="add-product-btn">➕ Ajouter un produit</button>
+            </div>
+
             <div id="products-grid" class="products-grid">
                 ${products.map(productTemplate).join('')}
             </div>

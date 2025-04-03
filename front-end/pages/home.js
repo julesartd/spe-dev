@@ -1,4 +1,6 @@
 import { apiClient } from "../utils/client.js";
+import {CartManager} from "../utils/cartManager.js";
+import {decodeJWT, getToken} from "../utils/auth.js";
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -15,8 +17,8 @@ const productTemplate = (product) => `
                 <span class="price">${product.prix}€</span>
             </div>
             <div class="product-actions">
-                <button class="add-to-cart" onclick="window.addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
-                    Ajouter
+                <button class="add-to-cart" data-product='${JSON.stringify(product).replace(/"/g, "&quot;")}'>
+                  Ajouter
                 </button>
                 <button class="details" onclick="window.location.href='/product/${product.id}'">
                     Détails
@@ -31,25 +33,26 @@ const updateProductsDisplay = (products, container) => {
 };
 
 const setupControls = (products) => {
-    const searchInput = document.getElementById('searchInput');
-    const sortSelect = document.getElementById('sortSelect');
-    const productsGrid = document.getElementById('products-grid');
+    const searchInput = document.getElementById("searchInput");
+    const sortSelect = document.getElementById("sortSelect");
+    const productsGrid = document.getElementById("products-grid");
     let currentProducts = [...products];
 
     const filterAndSort = () => {
         const searchTerm = searchInput.value.toLowerCase();
         const sortValue = sortSelect.value;
 
-        let filtered = products.filter(product =>
-            product.libelle.toLowerCase().includes(searchTerm) ||
-            product.description.toLowerCase().includes(searchTerm)
+        let filtered = products.filter(
+            (product) =>
+                product.libelle.toLowerCase().includes(searchTerm) ||
+                product.description.toLowerCase().includes(searchTerm)
         );
 
         switch (sortValue) {
-            case 'price-asc':
+            case "price-asc":
                 filtered.sort((a, b) => a.prix - b.prix);
                 break;
-            case 'price-desc':
+            case "price-desc":
                 filtered.sort((a, b) => b.prix - a.prix);
                 break;
         }
@@ -58,9 +61,11 @@ const setupControls = (products) => {
         updateProductsDisplay(filtered, productsGrid);
     };
 
-    searchInput.addEventListener('input', filterAndSort);
-    sortSelect.addEventListener('change', filterAndSort);
+    searchInput.addEventListener("input", filterAndSort);
+    sortSelect.addEventListener("change", filterAndSort);
+
 };
+
 
 export const homeView = async () => {
     let products = [];
@@ -69,6 +74,21 @@ export const homeView = async () => {
     } catch (error) {
         console.error("Erreur lors du chargement des produits:", error);
     }
+
+    setTimeout(async () => {
+        const products = await apiClient.get("products");
+
+        CartManager.renderFlyout(products);
+
+        document.querySelectorAll(".add-to-cart").forEach(btn => {
+            const product = JSON.parse(btn.dataset.product);
+
+            btn.addEventListener("click", () => {
+                CartManager.add(product.id);
+                CartManager.renderFlyout(products);
+            });
+        });
+    }, 0);
 
     setTimeout(() => setupControls(products), 0);
 
@@ -104,16 +124,17 @@ export const homeView = async () => {
             window.addToCart = function(product) {
                 const cart = JSON.parse(localStorage.getItem('cart') || '[]');
                 const existingItem = cart.find(item => item.id === product.id);
-
+        
                 if (existingItem) {
                     existingItem.quantity += 1;
                 } else {
                     cart.push({ ...product, quantity: 1 });
                 }
-
+        
                 localStorage.setItem('cart', JSON.stringify(cart));
                 alert('Produit ajouté au panier');
-            }
+            };
         </script>
+
     `;
 };

@@ -23,7 +23,10 @@ export const createRouter = (routes, isAuthenticatedFn) => {
             const match = matchRoute(path, routePattern);
             if (match) {
                 const route = routes[routePattern];
-                return { ...route, params: match.params };
+                return {
+                    ...route,
+                    params: match.params
+                };
             }
         }
         return routes["/404"];
@@ -34,13 +37,22 @@ export const createRouter = (routes, isAuthenticatedFn) => {
         if (!route) return;
 
         const needsAuth = route.protected === true;
+
         if (needsAuth && !isAuthenticatedFn()) {
             history.pushState({}, "", "/login");
-            return routes["/login"].view({});
+            const loginRoute = routes["/login"];
+            const html = await loginRoute.view({});
+            updateDOM("#app", html);
+            if (loginRoute.afterRender) loginRoute.afterRender();
+            return;
         }
 
         const html = await route.view(route.params || {});
         updateDOM("#app", html);
+
+        if (typeof route.afterRender === "function") {
+            route.afterRender();
+        }
     };
 
     const navigate = (path) => {

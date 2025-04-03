@@ -30,15 +30,20 @@ export const registerView = () => {
       <form id="registerForm" class="auth-form">
         <label>Prénom</label>
         <input type="text" name="firstName" required />
+    
         <label>Nom</label>
         <input type="text" name="lastName" required />
+    
         <label>Email</label>
         <input type="email" name="email" required />
+    
         <label>Mot de passe</label>
         <input type="password" name="password" required />
+    
         <button type="submit">S'inscrire</button>
         <p>Déjà inscrit ? <a href="/login" data-link>Se connecter</a></p>
       </form>
     </div>
+
   `;
 };

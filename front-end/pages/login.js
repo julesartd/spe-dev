@@ -1,5 +1,6 @@
 import { apiClient } from "../utils/client.js";
 import { saveToken } from "../utils/auth.js";
+import {CartManager} from "../utils/cartManager.js";
 
 export const loginView = () => {
     setTimeout(() => {
@@ -14,9 +15,9 @@ export const loginView = () => {
                 const result = await apiClient.post("auth/login", { email, password });
                 if (result.token) {
                     saveToken(result.token);
-                    apiClient.setToken(result.token)
-                    alert("Connexion réussie !");
-                    window.location.href = "/";
+                    await CartManager.synchronizeCart(); // Synchroniser avant la redirection
+                    document.dispatchEvent(new Event("login-success"));
+                    window.location.href = "/dashboard";
                 } else {
                     alert("Email ou mot de passe incorrect.");
                 }
@@ -28,16 +29,19 @@ export const loginView = () => {
     }, 0);
 
     return `
-    <div class="auth-form-container">
+   <div class="auth-form-container">
       <h2>Connexion</h2>
       <form id="loginForm" class="auth-form">
         <label>Email</label>
         <input type="email" name="email" required />
+        
         <label>Mot de passe</label>
         <input type="password" name="password" required />
+        
         <button type="submit">Se connecter</button>
         <p>Pas encore inscrit ? <a href="/register" data-link>Créer un compte</a></p>
       </form>
     </div>
+
   `;
 };
