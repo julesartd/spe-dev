@@ -25,10 +25,11 @@ const createLoginForm = () => `
 const performLogin = async (credentials) => {
     try {
         const result = await apiClient.post("auth/login", credentials);
-        if (!result.token) {
+        console.log("Résultat de la connexion :", result);
+        if (!result.data.token) {
             throw new Error("Token manquant dans la réponse");
         }
-        return result;
+        return result.data;
     } catch (error) {
         console.error("Erreur login :", error);
         throw error;
