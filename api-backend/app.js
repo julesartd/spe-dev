@@ -10,18 +10,19 @@ const cookieParser = require('cookie-parser');
 const Product = require('./models/product');
 const CspReport = require('./models/cspReport');
 const jsonErrorMiddleware = require('./middlewares/jsonErrorMiddleware');
-const cspMiddleware = require('./middlewares/cspMiddleware');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cspMiddleware);
+
 app.use(corsMiddleware);
 
 
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({
+  type: ['application/json', 'application/csp-report'],
+}));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(jsonErrorMiddleware);
@@ -52,21 +53,18 @@ app.get('/api/stats', async (req, res) => {
       categorie: stat.categorie,
       total: stat.dataValues.total,
     }));
-  
+
     res.status(200).json(formattedStats);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-app.get('/test-csp', (req, res) => {
-  res.send('CSP test page');
-}
-);
 
 
-app.post('/api/csp-violation-report', express.json(), async (req, res) => {
-  const report = req.body['csp-report'];
+app.post('/api/csp-violation-report', async (req, res) => {
+  console.log("salut");
+  const report = req.body;
   console.log('CSP Violation Report:', JSON.stringify(report, null, 2));
 
   if (!report) {

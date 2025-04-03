@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/product');
-const multer = require('../config/multer');
+const upload = require('../config/multer');
 const authenticate = require('../middlewares/authMiddleware');
 
 router.get('/', async (req, res) => {
@@ -38,7 +38,8 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', authenticate, multer.array('images', 5), async (req, res) => {
+router.post('/', authenticate, upload.array('images', 5), async (req, res) => {
+  try {
     const baseUrl = `${req.protocol}://${req.get('host')}`;
     const imageUrls = req.files && req.files.length > 0 
       ? req.files.map(file => `${baseUrl}/uploads/${file.filename}`)
@@ -52,7 +53,9 @@ router.post('/', authenticate, multer.array('images', 5), async (req, res) => {
 
     const product = await Product.create(productData);
     res.status(201).json(product);
-
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 });
 
 

@@ -31,7 +31,7 @@ const cspMiddleware = (req, res, next) => {
 
     helmet.contentSecurityPolicy({
         directives: cspDirectives,
-        reportOnly: false,
+        reportOnly: true,
     })(req, res, next);
 };
 
