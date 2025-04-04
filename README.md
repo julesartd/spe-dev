@@ -29,7 +29,7 @@ Ce projet est une application web e-commerce développée avec **Express.js** po
 1. Cloner le dépôt :
 
 ```bash
-git clone https://github.com/ton-utilisateur/ecommerce-app.git
+git clone https://github.com/julesartd/spe-dev.git
 ```
 
 2. Lancer le backend :
