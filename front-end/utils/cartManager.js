@@ -213,8 +213,6 @@ CartManager.prototype.bindQtyButtons = function(products) {
     });
 };
 
-// Création d'une instance unique (Singleton)
 const cartManager = new CartManager();
 
-// Export de l'instance
 export { cartManager as CartManager };
