@@ -1,24 +1,28 @@
-const { Sequelize } = require('sequelize');
-require('dotenv').config();
-
 const isTestEnv = process.env.NODE_ENV === 'test';
 
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: isTestEnv ? ':memory:' : process.env.DB_STORAGE || './database.sqlite',
-  logging: false,
-});
+if (isTestEnv) {
+  module.exports = require('./database-test');
+} else {
+  const { Sequelize } = require('sequelize');
+  require('dotenv').config();
 
-const connectToDatabase = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log('Connexion à la base de données réussie.');
-  } catch (error) {
-    console.error('Impossible de se connecter à la base de données:', error);
-  }
-};
+  const sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: process.env.DB_STORAGE || './database.sqlite',
+    logging: false,
+  });
 
-module.exports = {
-  sequelize,
-  connectToDatabase,
-};
+  const connectToDatabase = async () => {
+    try {
+      await sequelize.authenticate();
+      console.log('Connexion à la base de données réussie.');
+    } catch (error) {
+      console.error('Impossible de se connecter à la base de données:', error);
+    }
+  };
+
+  module.exports = {
+    sequelize,
+    connectToDatabase,
+  };
+}
