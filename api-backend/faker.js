@@ -4,7 +4,6 @@ const bcrypt = require('bcryptjs');
 const Product = require('./models/product');
 const User = require('./models/user');
 
-
 const createUsers = async () => [
   {
     firstName: faker.person.firstName(),
@@ -36,10 +35,17 @@ const createProductsForUser = (userId) =>
 
 const resetDatabaseAndInsertData = async () => {
   try {
-  
+    console.log('Désactivation des contraintes de clés étrangères...');
+    await sequelize.query('PRAGMA foreign_keys = OFF;'); // Désactive les clés étrangères pour SQLite
+    console.log('Contraintes de clés étrangères désactivées.');
+
     console.log('Suppression de toutes les tables...');
     await sequelize.drop();
     console.log('Toutes les tables ont été supprimées.');
+
+    console.log('Réactivation des contraintes de clés étrangères...');
+    await sequelize.query('PRAGMA foreign_keys = ON;'); // Réactive les clés étrangères pour SQLite
+    console.log('Contraintes de clés étrangères réactivées.');
 
     console.log('Synchronisation des modèles...');
     await sequelize.sync({ force: true });

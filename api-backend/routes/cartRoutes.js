@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Cart = require('../models/cart');
+const Product = require('../models/product');
 const CartProduct = require('../models/cartProduct');
 const authenticate = require('../middlewares/authMiddleware');
 
@@ -42,7 +43,6 @@ router.get('/', authenticate, async (req, res) => {
 
       const cartProducts = await CartProduct.findAll({
         where: { cartId: cart.id },
-        include: ['product'],
       });
 
       res.status(200).json(cartProducts);

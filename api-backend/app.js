@@ -29,6 +29,23 @@ app.use(jsonErrorMiddleware);
 
 app.use('/uploads', express.static('uploads'));
 
+app.post('/api/csp-violation-report', async (req, res) => {
+  const report = req.body;
+
+  if (!report) {
+    return res.status(400).json({ error: 'Invalid CSP report format' });
+  }
+
+  try {
+    await CspReport.create({ report });
+    console.log('CSP Violation Report enregistré:', JSON.stringify(report, null, 2));
+    res.status(204).end();
+  } catch (error) {
+    console.error('Erreur lors de l\'enregistrement du rapport CSP:', error);
+    res.status(500).json({ error: 'Failed to store CSP report' });
+  }
+});
+
 app.use(csrfMiddleware);
 
 app.get('/api/csrf-token', (req, res) => {
@@ -61,22 +78,6 @@ app.get('/api/stats', async (req, res) => {
 
 
 
-app.post('/api/csp-violation-report', async (req, res) => {
-  const report = req.body;
-
-  if (!report) {
-    return res.status(400).json({ error: 'Invalid CSP report format' });
-  }
-
-  try {
-    await CspReport.create({ report });
-    console.log('CSP Violation Report enregistré:', JSON.stringify(report, null, 2));
-    res.status(204).end();
-  } catch (error) {
-    console.error('Erreur lors de l\'enregistrement du rapport CSP:', error);
-    res.status(500).json({ error: 'Failed to store CSP report' });
-  }
-});
 
 
 

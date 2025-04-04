@@ -14,7 +14,8 @@ Cart.belongsTo(User, { foreignKey: 'userId' });
 
 Cart.belongsToMany(Product, { through: CartProduct, foreignKey: 'cartId', onDelete: 'CASCADE' });
 Product.belongsToMany(Cart, { through: CartProduct, foreignKey: 'productId', onDelete: 'CASCADE' });
-
+CartProduct.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+Product.hasMany(CartProduct, { foreignKey: 'productId' });
 module.exports = {
     sequelize,
     User,
