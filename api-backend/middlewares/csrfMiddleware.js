@@ -26,7 +26,6 @@ const csrfMiddleware = (req, res, next) => {
     const csrfTokenClient = req.headers['x-csrf-token'] ;
     const csrfTokenServer = req.cookies['csrf_token'];
 
-
     if (!csrfTokenClient || !csrfTokenServer) {
       return res.status(403).json({ error: 'CSRF token is missing' });
     }

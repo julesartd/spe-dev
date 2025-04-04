@@ -36,16 +36,14 @@ const createProductsForUser = (userId) =>
 const resetDatabaseAndInsertData = async () => {
   try {
     console.log('Désactivation des contraintes de clés étrangères...');
-    await sequelize.query('PRAGMA foreign_keys = OFF;'); // Désactive les clés étrangères pour SQLite
-    console.log('Contraintes de clés étrangères désactivées.');
+    await sequelize.query('PRAGMA foreign_keys = OFF;'); 
 
     console.log('Suppression de toutes les tables...');
     await sequelize.drop();
     console.log('Toutes les tables ont été supprimées.');
 
     console.log('Réactivation des contraintes de clés étrangères...');
-    await sequelize.query('PRAGMA foreign_keys = ON;'); // Réactive les clés étrangères pour SQLite
-    console.log('Contraintes de clés étrangères réactivées.');
+    await sequelize.query('PRAGMA foreign_keys = ON;'); 
 
     console.log('Synchronisation des modèles...');
     await sequelize.sync({ force: true });

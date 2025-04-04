@@ -104,6 +104,7 @@ const initializeEventListeners = () => {
     if (form && fileInput) {
         form.addEventListener('submit', (e) => handleSubmit(e, fileInput));
 
+        // Gestion de la prévisualisation des images
         fileInput.addEventListener('change', () => {
             const preview = document.getElementById('preview');
             preview.innerHTML = '';
