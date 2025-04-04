@@ -96,7 +96,7 @@ const registerUser = async (userData) => {
             displayErrors(response.data);
             return;
         }
-        if (response?.status === 200) {
+        if (response?.status === 200 || response?.status === 201) {
             window.location.href = "/login";
         }
     }catch(e){

@@ -13,10 +13,7 @@ const createProductCard = (product) => `
                 <span class="price">${product.prix}€</span>
             </div>
             <div class="product-actions">
-                <button class="add-to-cart" onclick="window.addToCart(${JSON.stringify({id: product.id}).replace(/"/g, '&quot;')})">
-                    Ajouter
-                </button>
-                <button class="details" onclick="window.location.href='/product/${product.id}'">
+                <button class="details-btn" data-id="${product.id}">
                     Détails
                 </button>
                 <button class="edit-product" data-id="${product.id}">✏️ Modifier</button>
@@ -63,6 +60,12 @@ const attachEventListeners = (products, updateUI) => {
     const searchInput = document.getElementById('searchInput');
     const sortSelect = document.getElementById('sortSelect');
     const addProductBtn = document.getElementById('addProductBtn');
+    document.querySelectorAll('.details-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const productId = e.target.dataset.id;
+            window.location.href = `/product/${productId}`;
+        });
+    });
 
     const handleFilterSort = () => {
         const filteredProducts = getFilteredAndSortedProducts(
@@ -129,6 +132,7 @@ export const dashbordView = async () => {
 
     setTimeout(() => {
         initializeCart();
+        attachEventListeners(products, updateUI);
         updateUI(products);
     }, 0);
 
