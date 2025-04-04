@@ -48,6 +48,7 @@ const handleDeleteProduct = async (id, products, updateUI) => {
         try {
             await apiClient.delete(`products/${id}`);
             const updatedProducts = products.filter(p => p.id !== id);
+            window.location.href = `/dashboard`;
             updateUI(updatedProducts);
         } catch (error) {
             console.error("Erreur lors de la suppression :", error);
