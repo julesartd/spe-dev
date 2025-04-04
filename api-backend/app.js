@@ -62,9 +62,7 @@ app.get('/api/stats', async (req, res) => {
 
 
 app.post('/api/csp-violation-report', async (req, res) => {
-  console.log("salut");
   const report = req.body;
-  console.log('CSP Violation Report:', JSON.stringify(report, null, 2));
 
   if (!report) {
     return res.status(400).json({ error: 'Invalid CSP report format' });

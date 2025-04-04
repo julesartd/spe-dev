@@ -93,20 +93,21 @@ const initializeEventListeners = () => {
     document.getElementById("toggle-cart-btn")?.addEventListener("click", toggleCart);
     document.addEventListener("mousedown", handleClickOutsideCart);
     document.addEventListener("login-success", CartManager.synchronizeCart);
-    document.addEventListener('securitypolicyviolation', async (e) => {
-       await apiClient.post('csp-violation-report',  {
-                    'document-uri': document.location.href,
-                    'referrer': document.referrer,
-                    'violated-directive': e.violatedDirective,
-                    'effective-directive': e.effectiveDirective,
-                    'original-policy': e.originalPolicy,
-                    'blocked-uri': e.blockedURI,
-                    'source-file': e.sourceFile,
-                    'line-number': e.lineNumber,
-                    'column-number': e.columnNumber
-                }
-            )});
-        }
+    // document.addEventListener('securitypolicyviolation', async (e) => {
+    //     await apiClient.post('csp-violation-report', {
+    //         'document-uri': document.location.href,
+    //         'referrer': document.referrer,
+    //         'violated-directive': e.violatedDirective,
+    //         'effective-directive': e.effectiveDirective,
+    //         'original-policy': e.originalPolicy,
+    //         'blocked-uri': e.blockedURI,
+    //         'source-file': e.sourceFile,
+    //         'line-number': e.lineNumber,
+    //         'column-number': e.columnNumber
+    //     }
+    //     )
+    // });
+}
 
 const initializeApp = () => {
     const router = createRouter(routes, isAuthenticated);
