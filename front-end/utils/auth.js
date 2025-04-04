@@ -50,10 +50,8 @@ AuthManager.prototype.logoutUser = function() {
     window.location.href = "/";
 };
 
-// Création d'une instance unique (Singleton)
 const auth = new AuthManager();
 
-// Export des méthodes
 export const saveToken = (token) => auth.saveToken(token);
 export const getToken = () => auth.getToken();
 export const checkTokenExpired = () => auth.checkTokenExpired();
@@ -61,5 +59,4 @@ export const isAuthenticated = () => auth.isAuthenticated();
 export const decodeJWT = (token) => auth.decodeJWT(token);
 export const logout = () => auth.logout();
 
-// Exposition de la méthode de déconnexion globalement
 window.logoutUser = () => auth.logoutUser();

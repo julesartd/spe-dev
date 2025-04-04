@@ -1,6 +1,6 @@
 const multer = require('multer');
 const path = require('path');
-
+const FileFormatError = require('../errors/fileFormatError'); 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -9,7 +9,6 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + path.extname(file.originalname));
   }
 });
-
 
 const fileFilter = (req, file, cb) => {
   const allowedMimeTypes = [
@@ -29,10 +28,9 @@ const fileFilter = (req, file, cb) => {
   if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Invalid file type. Only JPEG, PNG, GIF, BMP, WEBP, SVG, ICO, TIFF, AVIF, HEIF, and HEIC are allowed.')); // Rejette le fichier
+    cb(new FileFormatError('Invalid file type. Only JPEG, PNG, GIF, BMP, WEBP, SVG, ICO, TIFF, AVIF, HEIF, and HEIC are allowed.'));
   }
 };
-
 
 const upload = multer({
   storage: storage,

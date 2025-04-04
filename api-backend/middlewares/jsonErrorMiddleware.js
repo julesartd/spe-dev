@@ -1,5 +1,18 @@
+const FileFormatError = require("../errors/fileFormatError");
+
 const jsonErrorMiddleware = (err, req, res, next) => {
-  console.log('Error:', err);
+  console.error(err);
+
+  if (err instanceof FileFormatError) {
+    return res.status(err.status).json({
+      error: {
+        code: 'INVALID_FILE_TYPE',
+        status: err.status,
+        message: err.message,
+      },
+    });
+  }
+
   if (err.name === 'SequelizeValidationError' || err.name === 'SequelizeUniqueConstraintError') {
     const formattedErrors = {};
     let modelName = 'unknown'; // fallback model name
