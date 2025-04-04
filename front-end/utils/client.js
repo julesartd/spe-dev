@@ -9,6 +9,40 @@ function ApiClient() {
     this.baseUrl = BASE_URL + "/api/";
 }
 
+const escapeHtml = (unsafe) => {
+    if (typeof unsafe !== 'string') return unsafe;
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+};
+
+ApiClient.prototype.sanitizeData = function(data) {
+    if (data instanceof FormData) {
+        const sanitizedFormData = new FormData();
+        for (let [key, value] of data.entries()) {
+            if (typeof value === 'string') {
+                sanitizedFormData.append(key, escapeHtml(value));
+            } else {
+                sanitizedFormData.append(key, value);
+            }
+        }
+        return sanitizedFormData;
+    }
+
+    if (typeof data === 'object') {
+        const sanitizedData = {};
+        for (let [key, value] of Object.entries(data)) {
+            sanitizedData[key] = escapeHtml(value);
+        }
+        return sanitizedData;
+    }
+
+    return escapeHtml(data);
+};
+
 ApiClient.prototype.getCSRFToken = async function () {
     try {
         const response = await fetch(`${this.baseUrl}csrf-token`, {
@@ -33,9 +67,10 @@ ApiClient.prototype.getCSRFToken = async function () {
 };
 
 ApiClient.prototype.get = async function (endpoint) {
+    const sanitizedEndpoint = escapeHtml(endpoint);
     try {
         const token = getToken();
-        const response = await fetch(`${this.baseUrl}${endpoint}`, {
+        const response = await fetch(`${this.baseUrl}${sanitizedEndpoint}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -59,6 +94,7 @@ ApiClient.prototype.post = async function (endpoint, data) {
     const isFormData = data instanceof FormData;
     let token = getToken();
     let csrfToken = await this.getCSRFToken();
+    const sanitizedData = this.sanitizeData(data);
 
     try {
         const response = await fetch(`${this.baseUrl}${endpoint}`, {
@@ -74,7 +110,7 @@ ApiClient.prototype.post = async function (endpoint, data) {
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
                     'X-CSRF-Token': csrfToken
                 },
-            body: isFormData ? data : JSON.stringify(data),
+            body: isFormData ? sanitizedData : JSON.stringify(sanitizedData),
         });
 
         const json = await response.json();
@@ -92,6 +128,7 @@ ApiClient.prototype.put = async function (endpoint, data) {
     const isFormData = data instanceof FormData;
     let token = getToken();
     let csrfToken = await this.getCSRFToken();
+    const sanitizedData = this.sanitizeData(data);
 
     try {
         const response = await fetch(`${this.baseUrl}${endpoint}`, {
@@ -107,7 +144,7 @@ ApiClient.prototype.put = async function (endpoint, data) {
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
                     'X-CSRF-Token': csrfToken
                 },
-            body: isFormData ? data : JSON.stringify(data),
+            body: isFormData ? sanitizedData : JSON.stringify(sanitizedData),
         });
 
         return await response.json();
@@ -120,9 +157,9 @@ ApiClient.prototype.put = async function (endpoint, data) {
 ApiClient.prototype.delete = async function (endpoint) {
     const token = getToken();
     const csrfToken = await this.getCSRFToken();
-
+    const sanitizedEndpoint = escapeHtml(endpoint);
     try {
-        const response = await fetch(`${this.baseUrl}${endpoint}`, {
+        const response = await fetch(`${this.baseUrl}${sanitizedEndpoint}`, {
             method: 'DELETE',
             credentials: 'include',
             headers: {
