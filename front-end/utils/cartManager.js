@@ -1,5 +1,5 @@
-import { apiClient } from "./client.js";
-import { isAuthenticated } from "./auth.js";
+import {apiClient} from "./client.js";
+import {isAuthenticated} from "./auth.js";
 
 function CartManager() {
     if (CartManager.instance) {
@@ -8,7 +8,7 @@ function CartManager() {
     CartManager.instance = this;
 }
 
-CartManager.prototype.synchronizeCart = async function() {
+CartManager.prototype.synchronizeCart = async function () {
     if (!isAuthenticated()) return;
 
     try {
@@ -41,16 +41,16 @@ CartManager.prototype.synchronizeCart = async function() {
     }
 };
 
-CartManager.prototype.initialize = async function() {
+CartManager.prototype.initialize = async function () {
     if (isAuthenticated()) {
         await this.synchronizeCart();
     } else if (!localStorage.getItem("cart")) {
-        this.save({ products: [] });
+        this.save({products: []});
     }
     this.updateCartBadge();
 };
 
-CartManager.prototype.updateCartBadge = function() {
+CartManager.prototype.updateCartBadge = function () {
     const cart = this.getCart();
     const badge = document.getElementById("cart-badge");
 
@@ -62,7 +62,7 @@ CartManager.prototype.updateCartBadge = function() {
     }
 };
 
-CartManager.prototype.add = async function(productId) {
+CartManager.prototype.add = async function (productId) {
     const cart = this.getCart();
     const item = cart.products.find(p => p.productId === productId);
     const newQuantity = item ? item.quantity + 1 : 1;
@@ -70,7 +70,7 @@ CartManager.prototype.add = async function(productId) {
     if (item) {
         item.quantity = newQuantity;
     } else {
-        cart.products.push({ productId, quantity: newQuantity });
+        cart.products.push({productId, quantity: newQuantity});
     }
 
     this.save(cart);
@@ -89,16 +89,16 @@ CartManager.prototype.add = async function(productId) {
     }
 };
 
-CartManager.prototype.getCart = function() {
+CartManager.prototype.getCart = function () {
     const cart = localStorage.getItem("cart");
-    return cart ? JSON.parse(cart) : { products: [] };
+    return cart ? JSON.parse(cart) : {products: []};
 };
 
-CartManager.prototype.save = function(cart) {
+CartManager.prototype.save = function (cart) {
     localStorage.setItem("cart", JSON.stringify(cart));
 };
 
-CartManager.prototype.updateQuantity = async function(productId, quantity) {
+CartManager.prototype.updateQuantity = async function (productId, quantity) {
     const cart = this.getCart();
     const item = cart.products.find(p => p.productId === productId);
 
@@ -121,7 +121,7 @@ CartManager.prototype.updateQuantity = async function(productId, quantity) {
     }
 };
 
-CartManager.prototype.remove = async function(productId) {
+CartManager.prototype.remove = async function (productId) {
     const cart = this.getCart();
     cart.products = cart.products.filter(p => p.productId !== productId);
     this.save(cart);
@@ -137,7 +137,7 @@ CartManager.prototype.remove = async function(productId) {
     }
 };
 
-CartManager.prototype.getTotal = function(products) {
+CartManager.prototype.getTotal = function (products) {
     const cart = this.getCart();
     return cart.products.reduce((total, item) => {
         const product = products.find(p => p.id === item.productId);
@@ -145,19 +145,21 @@ CartManager.prototype.getTotal = function(products) {
     }, 0);
 };
 
-CartManager.prototype.renderFlyout = function(products) {
+CartManager.prototype.renderFlyout = async function () {
     const cartElement = document.getElementById("cart-items-list");
     const totalElement = document.getElementById("cart-total-price");
     const cart = this.getCart();
+
+    console.log("Rendering cart:", cart);
 
     if (!cartElement || !totalElement) return;
 
     cartElement.innerHTML = "";
     let total = 0;
 
-    cart.products.forEach(item => {
-        const product = products.find(p => p.id === item.productId);
-        if (!product) return;
+    for (const item of cart.products) {
+        const product = await apiClient.get(`products/${item.productId}`);
+        if (!product) continue;
 
         const itemTotal = product.prix * item.quantity;
         total += itemTotal;
@@ -178,13 +180,13 @@ CartManager.prototype.renderFlyout = function(products) {
             </div>
         `;
         cartElement.appendChild(el);
-    });
+    }
 
     totalElement.textContent = `${total.toFixed(2)}€`;
-    this.bindQtyButtons(products);
+    this.bindQtyButtons();
 };
 
-CartManager.prototype.bindQtyButtons = function(products) {
+CartManager.prototype.bindQtyButtons = function () {
     document.querySelectorAll(".qty-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
             const productId = parseInt(btn.dataset.id);
@@ -200,7 +202,7 @@ CartManager.prototype.bindQtyButtons = function(products) {
                 await this.updateQuantity(productId, item.quantity - 1);
             }
 
-            this.renderFlyout(products);
+            this.renderFlyout();
         });
     });
 
@@ -208,11 +210,11 @@ CartManager.prototype.bindQtyButtons = function(products) {
         btn.addEventListener("click", async () => {
             const productId = parseInt(btn.dataset.id);
             await this.remove(productId);
-            this.renderFlyout(products);
+            this.renderFlyout();
         });
     });
 };
 
 const cartManager = new CartManager();
 
-export { cartManager as CartManager };
+export {cartManager as CartManager};

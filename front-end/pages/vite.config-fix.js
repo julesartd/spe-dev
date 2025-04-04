@@ -1,6 +1,5 @@
 import { defineConfig, loadEnv } from 'vite';
 import crypto from 'crypto';
-import cspMiddleware from './middlewares/csp';
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd());
@@ -20,10 +19,7 @@ export default defineConfig(({ mode }) => {
                     const scriptTag = '<script type="module" src="/main.js"></script>';
                     const newScriptTag = `<script type="module" nonce="${NONCE}" src="/main.js"></script>`;
 
-                    // Remplacement direct du HTML
                     const transformedHtml = html.replace(scriptTag, newScriptTag);
-
-                    // Ajout de la balise meta CSP
                     return transformedHtml.replace(
                         '</head>',
                         `<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'nonce-${NONCE}'"></head>`
@@ -40,7 +36,7 @@ export default defineConfig(({ mode }) => {
                                 default-src 'self';
                                 script-src 'self' 'unsafe-inline' 'nonce-${NONCE}';
                                 style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-                                img-src 'self' data: blob: http://localhost:5000/uploads https://loremflickr.com https://picsum.photos https://fastly.picsum.photos;
+                                img-src 'self' data: blob: http://localhost:5000 https://loremflickr.com https://picsum.photos https://fastly.picsum.photos;
                                 connect-src 'self' http://localhost:5000 http://localhost:5000/api/stats;
                                 font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;
                                 object-src 'none';

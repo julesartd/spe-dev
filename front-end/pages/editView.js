@@ -1,6 +1,5 @@
 import { apiClient } from "../utils/client.js";
 import { getToken } from "../utils/auth.js";
-import { renderCategorySelect } from "../components/categorySelect.js";
 
 const createEditForm = (product) => `
     <section class="edit-product-section">

@@ -40,10 +40,8 @@ const updateNavigation = () => {
 
 const toggleCart = async () => {
     const flyout = document.getElementById("cart-flyout");
-
     if (flyout.classList.contains("hidden")) {
-        const products = await apiClient.get("products");
-        CartManager.renderFlyout(products);
+        CartManager.renderFlyout();
         flyout.classList.remove("hidden");
     } else {
         flyout.classList.add("hidden");
@@ -93,20 +91,6 @@ const initializeEventListeners = () => {
     document.getElementById("toggle-cart-btn")?.addEventListener("click", toggleCart);
     document.addEventListener("mousedown", handleClickOutsideCart);
     document.addEventListener("login-success", CartManager.synchronizeCart);
-    // document.addEventListener('securitypolicyviolation', async (e) => {
-    //     await apiClient.post('csp-violation-report', {
-    //         'document-uri': document.location.href,
-    //         'referrer': document.referrer,
-    //         'violated-directive': e.violatedDirective,
-    //         'effective-directive': e.effectiveDirective,
-    //         'original-policy': e.originalPolicy,
-    //         'blocked-uri': e.blockedURI,
-    //         'source-file': e.sourceFile,
-    //         'line-number': e.lineNumber,
-    //         'column-number': e.columnNumber
-    //     }
-    //     )
-    // });
 }
 
 const initializeApp = () => {

@@ -1,4 +1,3 @@
-import {renderCategorySelect} from "../components/categorySelect.js";
 import {apiClient} from "../utils/client.js";
 
 const getErrorMessage = (validatorKey) => {

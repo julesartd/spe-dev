@@ -1,9 +1,12 @@
 const FileFormatError = require("../errors/fileFormatError");
+const log = require("mocha/lib/hook");
 
 const jsonErrorMiddleware = (err, req, res, next) => {
   console.error(err);
 
+
   if (err instanceof FileFormatError) {
+    console.log(err.message);
     return res.status(err.status).json({
       error: {
         code: 'INVALID_FILE_TYPE',

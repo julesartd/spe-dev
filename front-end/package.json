@@ -8,15 +8,21 @@
   "description": "",
   "type": "module",
   "devDependencies": {
+    "jsdom": "^26.0.0",
+    "start-server-and-test": "^2.0.3",
     "vite": "^6.2.4",
     "vite-plugin-html": "^3.2.2"
   },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "mocha tests/e2e/**/*.test.js --timeout 30000"
   },
   "dependencies": {
-    "dotenv": "^16.4.7"
+    "chai": "^4.3.10",
+    "dotenv": "^16.4.7",
+    "mocha": "^10.3.0",
+    "puppeteer": "^22.4.0"
   }
 }
