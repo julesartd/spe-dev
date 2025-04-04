@@ -149,7 +149,7 @@ CartManager.prototype.renderFlyout = async function () {
     const cartElement = document.getElementById("cart-items-list");
     const totalElement = document.getElementById("cart-total-price");
     const cart = this.getCart();
-    
+
     if (!cartElement || !totalElement) return;
 
     cartElement.innerHTML = "";

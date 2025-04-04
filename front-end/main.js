@@ -51,10 +51,12 @@ const handleClickOutsideCart = (event) => {
     const cart = document.getElementById("cart-flyout");
     const toggleBtn = document.getElementById("toggle-cart-btn");
 
+
     if (!cart || cart.classList.contains("hidden")) return;
 
     const clickedInsideCart = cart.contains(event.target);
     const clickedToggleBtn = toggleBtn?.contains(event.target);
+
 
     if (!clickedInsideCart && !clickedToggleBtn) {
         cart.classList.add("hidden");
@@ -90,6 +92,9 @@ const initializeEventListeners = () => {
     document.getElementById("toggle-cart-btn")?.addEventListener("click", toggleCart);
     document.addEventListener("mousedown", handleClickOutsideCart);
     document.addEventListener("login-success", CartManager.synchronizeCart);
+    document.getElementById("logoutBtn")?.addEventListener("click", () => {
+        logoutUser()
+    });
 }
 
 const initializeApp = () => {
