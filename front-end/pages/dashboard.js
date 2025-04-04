@@ -64,7 +64,6 @@ const attachEventListeners = (products, updateUI) => {
     const sortSelect = document.getElementById('sortSelect');
     const addProductBtn = document.getElementById('addProductBtn');
 
-    // Gestionnaire de recherche et tri
     const handleFilterSort = () => {
         const filteredProducts = getFilteredAndSortedProducts(
             products,
@@ -77,12 +76,10 @@ const attachEventListeners = (products, updateUI) => {
     searchInput?.addEventListener('input', handleFilterSort);
     sortSelect?.addEventListener('change', handleFilterSort);
 
-    // Gestionnaire du bouton d'ajout
     addProductBtn?.addEventListener('click', () => {
         window.location.href = '/add-product';
     });
 
-    // Gestionnaires des boutons de suppression et modification
     document.querySelectorAll('.delete-product').forEach(button => {
         button.addEventListener('click', (e) => {
             handleDeleteProduct(e.target.dataset.id, products, updateUI);

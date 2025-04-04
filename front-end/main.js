@@ -7,7 +7,6 @@ import { addProductView } from "./pages/addProduct.js";
 import { registerView } from "./pages/register.js";
 import { dashbordView } from "./pages/dashboard.js";
 import { editView } from "./pages/editView.js";
-import { apiClient } from "./utils/client.js";
 import { CartManager } from "./utils/cartManager.js";
 
 const routes = {

@@ -43,13 +43,11 @@ const displayErrors = (error) => {
 const createFormData = (form, files) => {
     const formData = new FormData();
 
-    // Ajout des champs du formulaire
     formData.append('libelle', form.libelle.value);
     formData.append('prix', form.prix.value);
     formData.append('description', form.description.value);
     formData.append('categorie', form.categorie.value);
 
-    // Ajout des fichiers
     for (let i = 0; i < files.length; i++) {
         formData.append('images', files[i]);
     }
@@ -106,7 +104,6 @@ const initializeEventListeners = () => {
     if (form && fileInput) {
         form.addEventListener('submit', (e) => handleSubmit(e, fileInput));
 
-        // Gestion de la prévisualisation des images
         fileInput.addEventListener('change', () => {
             const preview = document.getElementById('preview');
             preview.innerHTML = '';

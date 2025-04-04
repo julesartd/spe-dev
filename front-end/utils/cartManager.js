@@ -202,7 +202,7 @@ CartManager.prototype.bindQtyButtons = function () {
                 await this.updateQuantity(productId, item.quantity - 1);
             }
 
-            this.renderFlyout();
+            await this.renderFlyout();
         });
     });
 
@@ -210,7 +210,7 @@ CartManager.prototype.bindQtyButtons = function () {
         btn.addEventListener("click", async () => {
             const productId = parseInt(btn.dataset.id);
             await this.remove(productId);
-            this.renderFlyout();
+            await this.renderFlyout();
         });
     });
 };

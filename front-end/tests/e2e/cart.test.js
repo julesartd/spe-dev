@@ -23,7 +23,7 @@ describe('CartManager Tests', () => {
         await browser.close();
     });
 
-    it('devrait ajouter un produit au panier', async () => {
+    it('should add a product to the cart', async () => {
         await page.waitForSelector('.product-card');
 
         await page.click('.add-to-cart');
@@ -38,7 +38,7 @@ describe('CartManager Tests', () => {
         expect(cartItemCount).to.equal(1);
     });
 
-    it('devrait modifier la quantité dans le panier', async () => {
+    it('should change the quantity in the cart', async () => {
 
         await page.waitForSelector('.product-card');
         await page.click('.add-to-cart');
@@ -51,7 +51,7 @@ describe('CartManager Tests', () => {
         expect(quantity).to.equal('2');
     });
 
-    it('devrait supprimer un produit du panier', async () => {
+    it('should remove a product from the cart', async () => {
 
         await page.waitForSelector('.product-card');
         await page.click('.add-to-cart');

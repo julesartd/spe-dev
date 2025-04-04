@@ -1,7 +1,5 @@
 import { defineConfig, loadEnv } from 'vite';
 import crypto from 'crypto';
-import cspMiddleware from './middlewares/csp';
-
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd());
 
@@ -20,10 +18,8 @@ export default defineConfig(({ mode }) => {
                     const scriptTag = '<script type="module" src="/main.js"></script>';
                     const newScriptTag = `<script type="module" nonce="${NONCE}" src="/main.js"></script>`;
 
-                    // Remplacement direct du HTML
                     const transformedHtml = html.replace(scriptTag, newScriptTag);
 
-                    // Ajout de la balise meta CSP
                     return transformedHtml.replace(
                         '</head>',
                         `<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'nonce-${NONCE}'"></head>`
