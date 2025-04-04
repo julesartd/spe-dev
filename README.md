@@ -102,7 +102,7 @@ JWT_SECRET_KEY=ef195a92da5fbd08e89ee180482e614c1cee20496e8270f081cebec74ca37d44
 
 ## 👨‍💻 Auteurs
 
-Projet développé par [Ton Nom]
+Projet développé par ARTAUD Jules et LEVASSEUR Kilian
 
 ---
 
