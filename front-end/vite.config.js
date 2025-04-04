@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
                                 default-src 'self';
                                 script-src 'self' 'unsafe-inline' 'nonce-${NONCE}';
                                 style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-                                img-src 'self' data: blob: http://localhost:5000/uploads https://loremflickr.com https://picsum.photos https://fastly.picsum.photos;
+                                img-src 'self' data: blob: http://localhost:5000 https://loremflickr.com https://picsum.photos https://fastly.picsum.photos;
                                 connect-src 'self' http://localhost:5000 http://localhost:5000/api/stats;
                                 font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;
                                 object-src 'none';

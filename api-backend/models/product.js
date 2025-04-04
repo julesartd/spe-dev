@@ -29,13 +29,6 @@ const Product = sequelize.define('Product', {
           throw new Error('Les images doivent être un tableau');
         }
       },
-      isUrl(value) {
-        value.forEach((url) => {
-          if (typeof url !== 'string' || !/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/.test(url)) {
-            throw new Error('Chaque image doit être une URL valide');
-          }
-        });
-      },
     },
   },
   prix: {

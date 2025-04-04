@@ -13,7 +13,6 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middlewares globaux
 app.use(corsMiddleware);
 app.use(cookieParser());
 app.use(express.json({
@@ -21,7 +20,6 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: true }));
 
-// Routes statiques et API
 app.use('/uploads', express.static('uploads'));
 app.use(csrfMiddleware);
 app.use('/api/auth', authRoutes);
@@ -32,7 +30,6 @@ app.get('/api/csrf-token', (req, res) => {
   res.json({ csrfToken: res.locals.csrfToken });
 });
 
-// Gestion des erreurs Multer
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     return next(err);
@@ -40,11 +37,9 @@ app.use((err, req, res, next) => {
   next(err);
 });
 
-// Middleware global pour les erreurs
 
 app.use(jsonErrorMiddleware);
 
-// Démarrage du serveur uniquement si ce fichier est exécuté directement
 if (require.main === module) {
   connectToDatabase().then(() => {
     sequelize.sync().then(() => {
@@ -55,5 +50,4 @@ if (require.main === module) {
   });
 }
 
-// Exporter l'application pour les tests
 module.exports = app;

@@ -1,4 +1,4 @@
-import {apiClient} from "../utils/client.js";
+import { apiClient } from "../utils/client.js";
 
 const getErrorMessage = (validatorKey) => {
     const messages = {
@@ -19,6 +19,15 @@ const clearErrors = () => {
 
 const displayErrors = (error) => {
     console.log("Erreur reçue:", error);
+
+    if (error?.error?.code === "INVALID_FILE_TYPE") {
+        const fileErrorElement = document.querySelector(`[data-field="images"]`);
+        if (fileErrorElement) {
+            fileErrorElement.textContent = error.error.message;
+            fileErrorElement.parentElement.classList.add('has-error');
+        }
+        return;
+    }
 
     const details = error?.error?.details?.product;
 
@@ -76,25 +85,19 @@ const handleSubmit = async (event, fileInput) => {
         return;
     }
 
-    try {
-        const formData = createFormData(form, files);
-        const response = await apiClient.post("products", formData);
 
-        if (response?.status === 422) {
-            console.log("Erreur validation:", response.data);
-            displayErrors(response.data);
-            return;
-        }
+    const formData = createFormData(form, files);
+    const response = await apiClient.post("products", formData);
 
-        if (response?.status === 200 || response?.status === 201) {
-            alert("Produit ajouté !");
-            window.location = '/dashboard';
-            resetForm(form);
-        }
-    } catch (error) {
-        console.error("Erreur:", error);
-        displayErrors(error);
+    if (response?.status === 200 || response?.status === 201) {
+        alert("Produit ajouté !");
+        window.location = '/dashboard';
+        resetForm(form);
     }
+
+    displayErrors(response.data);
+    return;
+
 };
 
 const initializeEventListeners = () => {
@@ -104,7 +107,6 @@ const initializeEventListeners = () => {
     if (form && fileInput) {
         form.addEventListener('submit', (e) => handleSubmit(e, fileInput));
 
-        // Gestion de la prévisualisation des images
         fileInput.addEventListener('change', () => {
             const preview = document.getElementById('preview');
             preview.innerHTML = '';
@@ -154,8 +156,8 @@ export const addProductView = async () => {
             </div>
 
             <div class="form-group">
-                <label for="images">Images (max 5)*</label>
-                <input type="file" id="images" name="images" accept="image/*" multiple required />
+                <label for="images">Images (max 5)</label>
+                <input type="file" id="images" name="images" accept="image/*" multiple />
                 <span class="error-message" data-field="images"></span>
                 <div class="file-info">Formats acceptés : JPG, PNG, GIF</div>
                 <div id="preview" class="preview-container"></div>

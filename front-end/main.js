@@ -95,6 +95,7 @@ const initializeEventListeners = () => {
     document.getElementById("logoutBtn")?.addEventListener("click", () => {
         logoutUser()
     });
+
 }
 
 const initializeApp = () => {
