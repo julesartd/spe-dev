@@ -6,8 +6,9 @@ const cartRoutes = require('./routes/cartRoutes');
 const corsMiddleware = require('./middlewares/corsMiddleware');
 const csrfMiddleware = require('./middlewares/csrfMiddleware');
 const cookieParser = require('cookie-parser');
-const multer = require('multer'); 
+const multer = require('multer');
 const jsonErrorMiddleware = require('./middlewares/jsonErrorMiddleware');
+const Product = require('./models/product');
 require('dotenv').config();
 
 const app = express();
@@ -21,6 +22,26 @@ app.use(express.json({
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/uploads', express.static('uploads'));
+
+app.get('/api/stats', async (req, res) => {
+    const stats = await Product.findAll({
+      attributes: [
+        'categorie',
+        [sequelize.fn('COUNT', sequelize.col('id')), 'total'],
+      ],
+
+      group: 'categorie',
+
+    });
+
+    const formattedStats = stats.map(stat => ({
+      categorie: stat.categorie,
+      total: stat.dataValues.total,
+    }));
+
+    res.status(200).json(formattedStats);
+});
+
 app.use(csrfMiddleware);
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);

@@ -37,9 +37,11 @@ git clone https://github.com/julesartd/spe-dev.git
 ```bash
 cd api-backend
 npm install
-npm run dev
+npm start
 node faker.js
 ```
+
+Le fichier faker.js permet d'insérer des données dans la base de donnée.
 
 3. Lancer le frontend :
 
@@ -58,7 +60,7 @@ VITE_API_URL=http://localhost:5000
 
 ### Pour le backend (`api-backend/.env`)
 ```env
-JWT_SECRET_KEY=ef195a92da5fbd08e89ee180482e614c1cee20496e8270f081cebec74ca37d44
+JWT_SECRET_KEY=votre_clé_secrète
 ```
 
 ## 📡 API
@@ -83,6 +85,24 @@ JWT_SECRET_KEY=ef195a92da5fbd08e89ee180482e614c1cee20496e8270f081cebec74ca37d44
 - Middleware CSRF avec récupération de token via `/api/csrf-token`
 - Middleware CORS
 - Rapport automatique de violation de politique CSP via l'API
+
+
+## Test Backend
+### Lancer les tests
+
+```bash
+cd api-backend
+npm run test
+```
+
+## Test Frontend
+### Lancer les tests
+
+```bash
+cd front-end
+npm run test
+```
+
 
 ## 📦 Dépendances principales
 
