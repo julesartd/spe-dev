@@ -100,7 +100,7 @@ npm run test
 
 ```bash
 cd front-end
-npm run test
+npm run test:e2e
 ```
 
 
